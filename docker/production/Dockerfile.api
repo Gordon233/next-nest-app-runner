@@ -1,8 +1,17 @@
-# 使用基础镜像
-FROM next-nest-app-base:latest AS base
-
 # 构建阶段
-FROM base AS builder
+FROM node:18-alpine AS builder
+
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# 复制配置文件
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY api/package.json ./api/
+COPY web/package.json ./web/
+
+# 安装依赖
+RUN pnpm install --frozen-lockfile
 
 # 复制源码
 COPY api ./api

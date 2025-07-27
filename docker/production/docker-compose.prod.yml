@@ -1,19 +1,10 @@
 
 services:
-  # 基础镜像
-  base:
-    build:
-      context: ../../
-      dockerfile: docker/production/Dockerfile.base
-    image: next-nest-app-base:latest
-
   # API 服务
   api:
     build:
       context: ../../
       dockerfile: docker/production/Dockerfile.api
-    depends_on:
-      - base
     ports:
       - "3001:3001"
     environment:
@@ -27,7 +18,6 @@ services:
       args:
         - NEXT_PUBLIC_API_URL=${NEXT_PUBLIC_API_URL:-http://localhost:3001}
     depends_on:
-      - base
       - api
     ports:
       - "3000:3000"
