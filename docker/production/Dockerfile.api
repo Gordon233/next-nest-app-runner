@@ -1,0 +1,46 @@
+# 使用基础镜像
+FROM next-nest-app-base:latest AS base
+
+# 构建阶段
+FROM base AS builder
+
+# 复制源码
+COPY api ./api
+COPY web ./web
+
+# 构建 API 服务
+WORKDIR /app/api
+RUN pnpm build
+
+# 验证构建产物
+RUN ls -la dist/ && (ls -la dist/main.js || ls -la dist/main || echo "Build output check failed")
+
+# 生产阶段
+FROM node:18-alpine AS production
+
+RUN npm install -g pnpm
+
+WORKDIR /app
+
+# 只复制必要的配置文件
+COPY pnpm-workspace.yaml package.json pnpm-lock.yaml ./
+COPY api/package.json ./api/
+COPY web/package.json ./web/
+
+# 只安装生产依赖
+RUN pnpm install --frozen-lockfile --prod
+
+# 复制构建产物和源码
+COPY --from=builder /app/api/dist ./api/dist
+COPY --from=builder /app/api/package.json ./api/
+COPY --from=builder /app/api/node_modules ./api/node_modules
+
+WORKDIR /app/api
+
+# 验证文件存在
+RUN ls -la dist/ && test -f dist/src/main.js
+
+EXPOSE 3001
+
+# 启动命令
+CMD ["node", "dist/src/main.js"]
