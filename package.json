@@ -1,5 +1,5 @@
 {
-  "name": "next-nest-app-runner",
+  "name": "nest-next-monorepo",
   "private": true,
   "scripts": {
     "dev": "pnpm --parallel run dev",
