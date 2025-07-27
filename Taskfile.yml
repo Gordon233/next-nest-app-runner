@@ -1,0 +1,19 @@
+version: '3'
+
+vars:
+  DEV_COMPOSE_FILE: docker/development/docker-compose.dev.yml
+  container_name: workspace
+
+
+tasks:
+  dev-reset-all:
+    desc: Rebuild and restart development environment
+    cmds:
+      - docker compose -f {{.DEV_COMPOSE_FILE}} down -v
+      - docker compose -f {{.DEV_COMPOSE_FILE}} build --no-cache
+      - docker compose -f {{.DEV_COMPOSE_FILE}} up
+  dev-cmd:
+    desc: Run a command in the development environment
+    cmds:
+      - docker compose -f {{.DEV_COMPOSE_FILE}} exec {{.container_name}} {{.CLI_ARGS}}
+
