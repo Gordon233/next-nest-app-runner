@@ -1,0 +1,34 @@
+version: '3.8'
+services:
+  workspace:
+    build:
+      context: ../../
+      dockerfile: docker/development/Dockerfile.dev
+    volumes:
+      # 挂载整个项目根目录，保持workspace结构完整
+      - ../../:/workspace
+      # 缓存node_modules以提升性能
+      - node_modules_cache:/workspace/node_modules
+      - pnpm_store:/root/.local/share/pnpm/store
+    working_dir: /workspace
+    command: ["tail", "-f", "/dev/null"]  # 保持容器运行
+
+  api:
+    extends: workspace
+    ports:
+      - "3001:3001"
+    command: ["pnpm", "--filter=api", "dev"]
+    depends_on:
+      - workspace
+
+  web:
+    extends: workspace
+    ports:
+      - "3000:3000"
+    command: ["pnpm", "--filter=web", "dev"]
+    depends_on:
+      - workspace
+
+volumes:
+  node_modules_cache:
+  pnpm_store:
