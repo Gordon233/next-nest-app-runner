@@ -2,6 +2,7 @@ version: '3'
 
 vars:
   DEV_COMPOSE_FILE: docker/development/docker-compose.dev.yml
+  PROD_COMPOSE_FILE: docker/production/docker-compose.prod.yml
   container_name: workspace
 
 
@@ -12,6 +13,14 @@ tasks:
       - docker compose -f {{.DEV_COMPOSE_FILE}} down -v
       - docker compose -f {{.DEV_COMPOSE_FILE}} build --no-cache
       - docker compose -f {{.DEV_COMPOSE_FILE}} up
+
+  prod-reset-all:
+    desc: Rebuild and restart development environment
+    cmds:
+      - docker compose -f {{.PROD_COMPOSE_FILE}} down -v
+      - docker compose -f {{.PROD_COMPOSE_FILE}} build --no-cache
+      - docker compose -f {{.PROD_COMPOSE_FILE}} up
+
   dev-cmd:
     desc: Run a command in the development environment
     cmds:
