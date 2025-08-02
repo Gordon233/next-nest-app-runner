@@ -14,6 +14,12 @@ tasks:
       - docker compose -f {{.DEV_COMPOSE_FILE}} build --no-cache
       - docker compose -f {{.DEV_COMPOSE_FILE}} up
 
+  dev-down-up:
+    desc: down and restart development environment
+    cmds:
+      - docker compose -f {{.DEV_COMPOSE_FILE}} down
+      - docker compose -f {{.DEV_COMPOSE_FILE}} up
+
   prod-reset-all:
     desc: Rebuild and restart development environment
     cmds:
